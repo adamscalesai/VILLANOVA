@@ -79,7 +79,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* ── containers ───────────────────────────────────────── */
 .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
-section{position:relative;padding:clamp(90px,12vw,180px) 0}
+section{position:relative;padding:60px 0}
 
 /* ── reveal on scroll ─────────────────────────────────── */
 .r{opacity:0;transform:translateY(32px);transition:opacity .9s ease-out, transform .9s cubic-bezier(.2,.7,.2,1)}
@@ -105,7 +105,7 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
   padding-top:12px;padding-bottom:12px;
 }
 .brand{display:flex;align-items:center;gap:14px;min-width:0}
-.brand img{width:42px;height:42px;object-fit:contain}
+.brand img{width:42px;height:42px;object-fit:contain;background:transparent;border:none;box-shadow:none}
 .brand .name{font-family:var(--disp);font-size:18px;letter-spacing:.28em;color:var(--cream)}
 .brand .name b{font-weight:500}
 .brand .sub{display:block;font-family:var(--ui);font-size:8px;letter-spacing:.5em;color:var(--gold);margin-top:2px}
@@ -251,7 +251,8 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
 /* ──────────────────────────────────────────────────────
    TRUST STRIP
    ────────────────────────────────────────────────────── */
-.trust{background:#A38560;padding:54px 0;border-top:1px solid rgba(3,17,13,.18);border-bottom:1px solid rgba(3,17,13,.18)}
+.trust{background:var(--forest);padding:20px 0}
+.trust-inner{background:#A38560;max-width:900px;margin:0 auto;border-radius:6px;padding:44px 40px}
 .trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
 .trust-cell{
   text-align:center;padding:8px 28px;position:relative;
@@ -506,7 +507,7 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
    ────────────────────────────────────────────────────── */
 .final{
   background:var(--forest);border-top:1px solid var(--gold);
-  padding-top:120px;text-align:center;
+  padding-top:60px;text-align:center;
 }
 .final .eyebrow{justify-content:center}
 .final h2{font-family:var(--disp);font-weight:300;font-size:clamp(48px,6.8vw,108px);line-height:1;letter-spacing:-.025em;margin:28px auto 26px;max-width:1100px}
@@ -521,12 +522,12 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
 }
 .final .big-btn:hover{background:#1FB855;border-color:#1FB855;transform:translateY(-3px)}
 .final .number{font-family:var(--disp);font-weight:500;font-size:28px;color:var(--gold);margin-top:30px;letter-spacing:.04em}
-.final .note{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:rgba(248,245,240,.5);margin-top:18px;padding-bottom:120px}
+.final .note{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:rgba(248,245,240,.5);margin-top:18px;padding-bottom:60px}
 
 /* ──────────────────────────────────────────────────────
    FOOTER
    ────────────────────────────────────────────────────── */
-.foot{background:var(--forest);border-top:1px solid var(--gold);padding:80px 0 36px}
+.foot{background:var(--forest);border-top:1px solid var(--gold);padding:60px 0 36px}
 .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:60px;margin-bottom:60px}
 .foot h5{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:22px}
 .foot ul{list-style:none;display:flex;flex-direction:column;gap:10px}
@@ -637,7 +638,6 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
     <div class="hero-tag-bar r">
       <span class="dotline"></span>
       <span>Immobilier Premium · Tunisie</span>
-      <span style="opacity:.5">Édition 2025 — № 01</span>
     </div>
 
     <h1 class="hero-headline">
@@ -659,26 +659,13 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
       </a>
     </div>
 
-    <div class="hero-meta r d6" style="margin-top:96px">
-      <div class="left">
-        <span><b>VN—01</b> · Grand Tunis</span>
-        <span><b>VN—02</b> · La Marsa</span>
-        <span><b>VN—03</b> · Gammarth</span>
-        <span><b>VN—04</b> · Sousse</span>
-      </div>
-      <div class="right" style="text-align:right">
-        <span>36°48′N · 10°10′E</span>
-      </div>
-    </div>
   </div>
 
-  <div class="scroll-cue"><div class="line"></div><span>Défiler</span></div>
-  <div class="online-cue"><span class="dot"></span><span>En ligne · Réponse &lt; 5 min</span></div>
 </header>
 
 <!-- ═══════════════ TRUST STRIP ═══════════════ -->
 <section class="trust">
-  <div class="wrap">
+  <div class="trust-inner">
     <div class="trust-grid">
       <div class="trust-cell r">
         <div class="trust-num disp">Tunis</div>
@@ -701,16 +688,13 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
 </section>
 
 <!-- ═══════════════ PROPERTIES / CATEGORIES ═══════════════ -->
+
 <section class="props" id="proprietes">
   <div class="wrap">
     <div class="section-head">
       <div>
         <span class="eyebrow r">Trouvez votre bien</span>
         <h2 class="r d1">Que recherchez-vous <em>?</em></h2>
-      </div>
-      <div class="meta r d2">
-        <b>03 catégories</b>
-        Dites-nous ce que vous cherchez<br/>Nous trouvons le bien parfait
       </div>
     </div>
 
@@ -719,9 +703,8 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
         <div class="cat-bg" style="background-image:url('assets/cat-apartment.jpg')"></div>
         <div class="cat-overlay"></div>
         <div class="cat-body">
-          <div class="cat-icon" aria-hidden="true">🏠</div>
           <h3 class="cat-name">Appartement</h3>
-          <p class="cat-desc">Studios, S2, S3 et plus — trouvez la location ou l'achat qui vous correspond.</p>
+          <p class="cat-desc">Studios, S2, S3 et plus, trouvez la location ou l'achat qui vous correspond.</p>
           <div class="cat-foot">
             <span class="cat-link">Nous contacter</span>
             <span class="cat-arrow">→</span>
@@ -733,9 +716,8 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
         <div class="cat-bg" style="background-image:url('assets/cat-villa.jpg')"></div>
         <div class="cat-overlay"></div>
         <div class="cat-body">
-          <div class="cat-icon" aria-hidden="true">🏛️</div>
           <h3 class="cat-name">Villa</h3>
-          <p class="cat-desc">Villas individuelles, propriétés avec jardin ou piscine — pour vivre ou investir.</p>
+          <p class="cat-desc">Villas individuelles, propriétés avec jardin ou piscine, pour vivre ou investir.</p>
           <div class="cat-foot">
             <span class="cat-link">Nous contacter</span>
             <span class="cat-arrow">→</span>
@@ -747,7 +729,6 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
         <div class="cat-bg" style="background-image:url('assets/cat-office.jpg')"></div>
         <div class="cat-overlay"></div>
         <div class="cat-body">
-          <div class="cat-icon" aria-hidden="true">🏢</div>
           <h3 class="cat-name">Bureau</h3>
           <p class="cat-desc">Espaces commerciaux et bureaux professionnels à Tunis et ses environs.</p>
           <div class="cat-foot">
@@ -864,7 +845,7 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
           <li class="svc-item r d4">
             <div class="svc-num">05</div>
             <div>
-              <div class="svc-name">Portfolio luxe <span style="font-family:var(--ui);font-weight:500;font-size:10px;letter-spacing:.32em;color:var(--gold-light);text-transform:uppercase;margin-left:12px">— Bientôt</span></div>
+              <div class="svc-name">Portfolio luxe</div>
               <div class="svc-desc">Villas prestige, adresses vue mer, propriétés d'exception.</div>
             </div>
             <div class="svc-arrow">→</div>
@@ -974,7 +955,7 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
     <div class="foot-grid">
       <div>
         <a href="#top" class="brand" style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
-          <img src="assets/logo.png" alt="" style="width:42px;height:42px;object-fit:contain" />
+          <img src="assets/logo.png" alt="" style="width:42px;height:42px;object-fit:contain;background:transparent;border:none" />
           <span><span class="name">VILLA <b>NOVA</b></span><span class="sub">HOLDINGS</span></span>
         </a>
         <p>Immobilier premium en Tunisie. Achat, vente, location et estimation — avec l'expertise locale et la réactivité que vous méritez.</p>
@@ -996,7 +977,7 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
           <li><a href="#services">Location &amp; gestion</a></li>
           <li><a href="#services">Conseil investissement</a></li>
           <li><a href="#estimation">Estimation de bien</a></li>
-          <li><a href="#services">Portfolio luxe <span style="color:var(--gold)">— Bientôt</span></a></li>
+          <li><a href="#services">Portfolio luxe</a></li>
         </ul>
       </div>
       <div>
@@ -1011,7 +992,6 @@ section{position:relative;padding:clamp(90px,12vw,180px) 0}
     </div>
     <div class="foot-bottom">
       <small>© 2025 Villa Nova Holdings · Immobilier Premium · Tunisie</small>
-      <small>Conçu à Tunis · MMXXV</small>
     </div>
   </div>
 </footer>
