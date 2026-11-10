@@ -1,0 +1,15 @@
+# Keeps the free Supabase project "villanova" awake: free projects pause after about a week without activity.
+# Reads one public row with the publishable key (public by design). Runs daily, or by hand from the Actions tab.
+name: Supabase keep-alive
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read the agencies table
+        run: |
+          curl -fsS -H "apikey: sb_publishable_hUHuniceV8kqlrhsiY1JRg_gz1sXJeL" \
+            "https://kleqaeklgsoiqrgvtstc.supabase.co/rest/v1/agencies?select=slug" > /dev/null

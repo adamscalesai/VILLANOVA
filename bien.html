@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bien immobilier | Villa Nova Holdings</title>
+<meta name="description" content="Bien immobilier proposé par Villa Nova Holdings, Tunis.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Villa Nova Holdings">
+<meta property="og:title" content="Un bien Villa Nova Holdings, immobilier premium en Tunisie">
+<meta property="og:description" content="Photos, prix et visite sur WhatsApp. Villa Nova répond en moins de 5 minutes.">
+<meta property="og:image" content="https://www.villanova.tn/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/vn.css?v=8">
+</head>
+<body>
+<main id="page"></main>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Photos">
+  <div class="lb-top"><span class="lb-count" id="lbCount"></span><button id="lbClose" aria-label="Fermer">×</button></div>
+  <div class="slides" id="lbSlides"></div>
+  <button class="media-nav prev" aria-label="Photo précédente"></button>
+  <button class="media-nav next" aria-label="Photo suivante"></button>
+</div>
+
+<script src="assets/vn-config.js?v=8"></script>
+<script src="assets/vn-data.js?v=8"></script>
+<script src="assets/vn-ui.js?v=8"></script>
+<script>
+(async function () {
+  const V = VN, U = VNUI, I = U.I;
+  const ref = new URLSearchParams(location.search).get('ref') || '';
+  U.shell('biens');
+  const page = document.getElementById('page');
+  let p;
+  try { p = await V.store.get(ref); }
+  catch (e) {
+    page.innerHTML = '<div class="wrap notfound"><h1>Connexion impossible</h1><p>La page n\'a pas pu charger ce bien. Vérifiez votre connexion et réessayez.</p><button class="btn btn-ink" onclick="location.reload()">Réessayer</button></div>';
+    return;
+  }
+
+  if (!p || !p.published) {
+    page.innerHTML = '<div class="wrap notfound"><span class="caps" style="color:var(--gold-text)">Réf. ' + V.esc(ref || 'inconnue') + '</span><h1 style="margin-top:16px">Ce bien n\'est plus en ligne</h1><p>Il a peut-être été vendu ou loué. Voici nos biens disponibles.</p><a class="btn btn-ink" href="biens.html">Voir nos biens</a></div>';
+    return;
+  }
+
+  document.title = p.title + ' | ' + V.priceText(p) + ' | Villa Nova Holdings';
+  document.querySelector('meta[name=description]').content = (p.tagline ? p.tagline + '. ' : '') + p.title + ', ' + V.priceText(p) + '.';
+
+  const hasPhotos = !!(p.photos && p.photos.length);
+  const photos = hasPhotos ? p.photos : [{ full: 'assets/placeholder.jpg' }];
+  const big = (ph) => V.esc(ph.full || ph.thumb);
+  const ppm = V.perM2(p);
+  const fav = V.favs.has(p.ref);
+  const isOpen = p.status !== 'vendu';
+  const status = p.status === 'reserve' ? 'Réservé · ' : p.status === 'vendu' ? V.statusLabel(p) + ' · ' : (p.featured ? 'Exclusivité · ' : '');
+  const backHref = (() => { try { if (document.referrer && new URL(document.referrer).pathname.endsWith('biens.html')) return document.referrer; } catch (e) {} return 'biens.html' + (p.transaction ? '?t=' + p.transaction : ''); })();
+
+  // facts as a specification list, Engel & Völkers style
+  const rows = [['Type', V.esc(V.TYPES[p.type] || '')], ['Transaction', p.transaction === 'location' ? 'Location' : 'Vente'], ['Prix', V.priceText(p)]];
+  if (ppm) rows.push(['Prix au m²', ppm]);
+  if (p.surface) rows.push(['Surface habitable', V.num(p.surface) + ' m²']);
+  if (p.land_surface) rows.push(['Terrain', V.num(p.land_surface) + ' m²']);
+  if (p.rooms) rows.push(['Chambres', 'S+' + p.rooms]);
+  if (p.bathrooms) rows.push(['Salles de bain', p.bathrooms]);
+  if (p.floor != null && p.floor !== '' && !['villa', 'maison', 'terrain'].includes(p.type)) rows.push(['Étage', +p.floor === 0 ? 'Rez-de-chaussée' : p.floor]);
+  if (p.year_built) rows.push(['Construction', p.year_built]);
+  if (p.title_deed && V.TITLE_DEEDS[p.title_deed]) rows.push(['Titre de propriété', V.TITLE_DEEDS[p.title_deed]]);
+  if (p.transaction === 'location' && p.available_from) {
+    const d = new Date(p.available_from + 'T00:00:00');
+    if (!isNaN(d)) rows.push(['Disponible', d <= new Date() ? 'Immédiatement' : 'À partir du ' + d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })]);
+  }
+  if (p.transaction === 'location' && p.deposit_months) rows.push(['Caution', p.deposit_months + ' mois de loyer']);
+  if (p.charges) rows.push(['Charges', V.num(p.charges) + ' TND / mois']);
+  rows.push(['Quartier', V.esc(V.where(p))], ['Référence', V.esc(p.ref)]);
+  const video = V.safeUrl(p.video_url);
+  const feats = (p.features || []).filter(f => V.FEATURES[f]).map(f => V.FEATURES[f]);
+
+  // photo sequence: pairs, every third photo full width
+  const seq = photos.map((ph, i) => '<button class="' + (i % 3 === 0 ? 'wide' : '') + '" data-open="' + i + '" aria-label="Agrandir la photo ' + (i + 1) + '"><img src="' + big(ph) + '" alt="' + V.esc(p.title) + ', photo ' + (i + 1) + '" loading="lazy"></button>').join('');
+  const mapQ = encodeURIComponent([p.area, p.city, 'Tunisie'].filter(Boolean).join(', '));
+  const acts = (cls) => isOpen
+    ? '<a class="btn btn-gold ' + cls + '" target="_blank" rel="noopener" href="' + V.waVisit(p) + '">Visiter</a>' +
+      '<a class="btn btn-wa ' + cls + '" target="_blank" rel="noopener" href="' + V.waProperty(p) + '">' + I.wa + 'WhatsApp</a>' +
+      '<a class="btn btn-line-dark ' + cls + '" href="tel:+' + V.PHONE + '" aria-label="Appeler ' + V.PHONE_DISPLAY + '">' + I.phone + '</a>'
+    : '<a class="btn btn-wa ' + cls + '" target="_blank" rel="noopener" href="' + V.wa('Bonjour Villa Nova, je cherche un bien similaire à « ' + p.title + ' » (Réf. ' + p.ref + ').') + '">' + I.wa + 'Un bien similaire</a>';
+
+  const card =
+    '<div class="hero-card"><span class="caps st">' + status + V.esc(p.area || p.city || '') + ' · ' + (p.transaction === 'location' ? 'À louer' : 'À vendre') + '</span>' +
+    '<h1>' + V.esc(p.title) + '</h1>' +
+    '<div class="where">' + V.esc(V.specLine(p)) + '</div>' +
+    '<div class="price">' + V.priceHTML(p) + '</div>' + (ppm ? '<div class="ppm">' + ppm + '</div>' : '') +
+    (isOpen
+      ? '<div class="row"><a class="btn btn-ink" target="_blank" rel="noopener" href="' + V.waVisit(p) + '">Organiser une visite</a><a class="btn btn-wa" target="_blank" rel="noopener" href="' + V.waProperty(p) + '" aria-label="WhatsApp">' + I.wa + '</a></div>'
+      : '<div class="row"><a class="btn btn-ink" target="_blank" rel="noopener" href="' + V.wa('Bonjour Villa Nova, je cherche un bien similaire à « ' + p.title + ' » (Réf. ' + p.ref + ').') + '">Un bien similaire ?</a></div>') +
+    '<div class="lnks">' + (hasPhotos ? '<button data-open="0">' + I.grid + photos.length + ' photo' + (photos.length > 1 ? 's' : '') + '</button>' : '') +
+    (video ? '<a href="' + V.esc(video) + '" target="_blank" rel="noopener nofollow"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Vidéo</a>' : '') +
+    '<a href="#quartier">' + I.map + 'Quartier</a>' +
+    '<button id="shareBtn">' + I.share + 'Partager</button><button data-fav="' + V.esc(p.ref) + '" aria-pressed="' + fav + '">' + I.heart + 'Favori</button></div></div>';
+
+  page.innerHTML =
+    '<section class="hero"><img src="' + big(photos[0]) + '" alt="' + V.esc(p.title) + '">' +
+      '<div class="backbar"><a href="' + V.esc(backHref) + '">' + I.left + 'Nos biens</a></div>' + card +
+      (photos.length > 1 ? '<button class="more-photos" data-open="0">' + I.grid + 'Voir les ' + photos.length + ' photos</button>' : '') + '</section>' +
+    '<section class="m-hero"><div class="slides">' + photos.map((ph, i) => '<img src="' + big(ph) + '" alt="' + V.esc(p.title) + ', photo ' + (i + 1) + '" data-open="' + i + '"' + (i ? ' loading="lazy"' : '') + '>').join('') + '</div>' +
+      (photos.length > 1 ? '<span class="count">1 / ' + photos.length + '</span>' : '') +
+      '<div class="backbar"><a href="' + V.esc(backHref) + '">' + I.left + 'Nos biens</a></div></section>' +
+    '<div class="m-card"></div>' +
+    '<article class="story">' + (p.tagline ? '<blockquote>« ' + V.esc(p.tagline) + ' »</blockquote>' : '') +
+      (p.description ? '<div class="body">' + V.esc(p.description) + '</div>' : '') + '</article>' +
+    '<section class="facts"><h2>L\'essentiel</h2><dl class="spec-list">' + rows.map(([k, v]) => '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>').join('') + '</dl>' +
+      (feats.length ? '<p class="feat-line"><b>Équipements</b> · ' + feats.join(' · ') + '</p>' : '') + '</section>' +
+    (photos.length > 1 ? '<section class="photos"><h2>Photos</h2><div class="ph-seq">' + seq + '</div></section>' : '') +
+    '<section class="where-sec" id="quartier"><h2>Le quartier</h2><iframe class="map" loading="lazy" title="Carte : ' + V.esc(V.where(p)) + '" src="https://maps.google.com/maps?q=' + mapQ + '&z=13&output=embed"></iframe>' +
+      '<p class="map-note">Emplacement approximatif : ' + V.esc(V.where(p)) + '. L\'adresse exacte vous est communiquée à la visite.</p></section>' +
+    '<section class="enquire"><div class="wrap"><div><h2>' + (isOpen ? 'Ce bien vous <em>intéresse&nbsp;?</em>' : 'Ce bien est ' + V.statusLabel(p).toLowerCase()) + '</h2>' +
+      '<p><span class="dot"></span>Réponse sur WhatsApp en moins de 5 minutes, 7 jours sur 7</p></div>' +
+      '<div class="stack">' + (isOpen
+        ? '<a class="btn btn-ink" target="_blank" rel="noopener" href="' + V.waVisit(p) + '">Organiser une visite</a><a class="btn btn-wa" target="_blank" rel="noopener" href="' + V.waProperty(p) + '">' + I.wa + 'Poser une question sur WhatsApp</a><a class="btn btn-line" href="tel:+' + V.PHONE + '">' + I.phone + V.PHONE_DISPLAY + '</a>'
+        : '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + V.wa('Bonjour Villa Nova, je cherche un bien similaire à « ' + p.title + ' » (Réf. ' + p.ref + ').') + '">' + I.wa + 'Trouver un bien similaire</a>') +
+      '</div></div></section>' +
+    '<section class="similar wrap" id="similar" hidden><h2>Dans le même esprit</h2><div class="grid" id="simGrid"></div></section>' +
+    '<div class="sbar" id="sbar"><div class="wrap"><div class="t"><b>' + V.esc(p.title) + '</b><span>' + V.priceText(p) + '</span></div><div class="acts">' + acts('btn-sm') + '</div></div></div>';
+
+  // phone: the info card sits under the swipe gallery instead of over the photo
+  const mq = matchMedia('(max-width:760px)');
+  const placeCard = () => {
+    const c = page.querySelector('.hero-card'), slot = page.querySelector('.m-card'), hero = page.querySelector('.hero');
+    if (mq.matches && c.parentNode !== slot) slot.append(c);
+    if (!mq.matches && c.parentNode !== hero) hero.insertBefore(c, hero.querySelector('.more-photos'));
+  };
+  placeCard(); mq.addEventListener('change', placeCard);
+
+  document.body.classList.add('has-sbar');
+  const sbar = document.getElementById('sbar');
+  new IntersectionObserver(([e]) => { const on = !e.isIntersecting && e.boundingClientRect.top < 0; sbar.classList.toggle('on', on); document.body.classList.toggle('sbar-on', on); })
+    .observe(page.querySelector('.hero-card'));
+
+  document.getElementById('shareBtn').onclick = () => U.share(p);
+  U.bindHearts(page); U.bindSlides(page);
+
+  // similar: same transaction, same type group, same area first
+  const group = Object.values(V.TYPE_GROUPS).find(g => g.types.includes(p.type)) || { types: [] };
+  const others = (await V.store.listPublic()).filter(o => o.ref !== p.ref && o.status !== 'vendu' && o.transaction === p.transaction);
+  others.sort((a, b) => (group.types.includes(b.type) - group.types.includes(a.type)) || ((a.area === p.area ? 0 : 1) - (b.area === p.area ? 0 : 1)));
+  const sim = others.slice(0, 3);
+  if (sim.length) {
+    document.getElementById('similar').hidden = false;
+    const g = document.getElementById('simGrid');
+    g.innerHTML = sim.map(o => U.card(o)).join('');
+    U.bindSlides(g); U.bindHearts(g); U.bindPhotoOpen(g);
+  }
+
+  // lightbox
+  const lb = document.getElementById('lb'), ls = document.getElementById('lbSlides');
+  ls.innerHTML = photos.map((ph, i) => '<img src="' + big(ph) + '" alt="Photo ' + (i + 1) + '" loading="lazy">').join('');
+  lb.querySelector('.prev').innerHTML = I.left; lb.querySelector('.next').innerHTML = I.right;
+  const lbCount = document.getElementById('lbCount'), n = photos.length;
+  const cur = () => Math.round(ls.scrollLeft / ls.clientWidth);
+  const upd = () => { lbCount.textContent = (cur() + 1) + ' / ' + n; };
+  ls.addEventListener('scroll', upd, { passive: true });
+  const go = (d) => ls.scrollTo({ left: ((cur() + d + n) % n) * ls.clientWidth, behavior: 'smooth' });
+  lb.querySelector('.prev').onclick = () => go(-1); lb.querySelector('.next').onclick = () => go(1);
+  function open(i) { lb.classList.add('open'); document.body.style.overflow = 'hidden'; requestAnimationFrame(() => { ls.scrollLeft = i * ls.clientWidth; upd(); }); }
+  function close() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+  document.getElementById('lbClose').onclick = close;
+  document.addEventListener('keydown', (e) => { if (!lb.classList.contains('open')) return; if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); });
+  page.addEventListener('click', (e) => { const t = e.target.closest('[data-open]'); if (t && hasPhotos) open(+t.dataset.open); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Espace agence | Villa Nova</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/vn.css?v=8">
+<style>
+body{background:var(--paper)}
+.abar{position:sticky;top:0;z-index:80;background:var(--forest);color:var(--cream);height:64px;display:flex;align-items:center;gap:16px;padding:0 var(--gutter);border-bottom:1px solid var(--hairline)}
+.abar .brand .name{font-size:15px}
+.abar .tag-space{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border-left:1px solid var(--hairline-strong);padding-left:14px}
+.abar .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.abar a,.abar button{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--cream);padding:10px 12px;border:1px solid var(--hairline-strong);min-height:40px;display:inline-flex;align-items:center}
+.view{display:none}.view.on{display:block}
+.amain{max-width:1240px;margin:0 auto;padding:28px var(--gutter) 120px}
+
+/* login */
+.login{max-width:420px;margin:8vh auto 0;background:var(--card);border:1px solid var(--line);padding:36px 30px}
+.login h1{font-family:var(--disp);font-size:36px;font-weight:500;line-height:1.05;margin:14px 0 22px}
+.field{display:grid;gap:6px;margin-bottom:16px}
+.field > label,.lbl-t{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+.field .hint{font-size:12px;color:var(--muted);letter-spacing:0;text-transform:none;font-weight:400}
+.inp,.field select,.field textarea{width:100%;background:#fff;border:1px solid var(--line-strong);padding:13px 14px;font-size:16px;min-height:50px;border-radius:0;appearance:none;-webkit-appearance:none}
+.field textarea{min-height:150px;resize:vertical;line-height:1.6}
+.inp:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(163,133,96,.18)}
+.demo-note{background:var(--paper);border-left:3px solid var(--bordeaux);padding:12px 14px;font-size:13px;margin-bottom:18px;color:var(--ink)}
+
+/* list */
+.list-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.list-head h1{font-family:var(--disp);font-size:44px;font-weight:500;line-height:1}
+.add-btn{font-size:12px;padding:16px 24px}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);padding:10px 14px;font-size:12px;font-weight:600;display:flex;gap:8px;align-items:center;min-height:44px}
+.stat b{font-family:var(--disp);font-size:22px;line-height:1}
+.stat[aria-pressed="true"]{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.search{margin-bottom:18px;max-width:420px}
+.rows{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:18px;align-items:center;background:var(--card);border:1px solid var(--line);padding:12px}
+.row img{width:120px;height:90px;object-fit:cover;background:#e7e1d6}
+.row h3{font-size:15px;font-weight:600;line-height:1.35}
+.row .sub{font-size:13px;color:var(--muted);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230E1A16' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;cursor:pointer}
+.owner-line{font-size:12.5px;color:var(--gold-text);margin-top:6px;font-weight:500}
+.owner-line a{text-decoration:underline}
+.blk-private{background:#FBF8F1;border-color:var(--hairline-strong)}
+.priv-note{font-size:13px;color:var(--gold-text);margin:-8px 0 16px;display:flex;gap:8px;align-items:center;font-weight:500}
+.row .pr{font-family:var(--disp);font-size:22px;font-weight:600;margin-top:4px}
+.row .pr small{font-family:var(--ui);font-size:11px;color:var(--muted)}
+.pill{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border:1px solid}
+.pill.disponible{color:var(--ok);border-color:currentColor}
+.pill.reserve{color:var(--warn);border-color:currentColor}
+.pill.vendu{color:var(--bordeaux);border-color:currentColor}
+.pill.off{color:var(--muted);border-color:var(--line-strong)}
+.row .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.row .acts .btn{min-height:40px}
+.row.is-off{opacity:.7}
+.empty-list{background:var(--card);border:1px dashed var(--line-strong);padding:40px;text-align:center;color:var(--muted)}
+.foot-tools{margin-top:30px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.foot-tools button{text-decoration:underline;font-size:12px;color:var(--muted)}
+
+/* editor */
+.ed-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.ed-head h1{font-family:var(--disp);font-size:38px;font-weight:500;line-height:1}
+.ed-head .refx{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted);border:1px solid var(--line);padding:4px 8px;background:var(--card)}
+.ed{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;align-items:start}
+.blk{background:var(--card);border:1px solid var(--line);padding:24px;margin-bottom:16px}
+.blk h2{font-family:var(--disp);font-size:26px;font-weight:500;margin-bottom:18px;display:flex;gap:12px;align-items:baseline}
+.blk h2 span{font-family:var(--ui);font-size:11px;font-weight:700;color:var(--gold-text);letter-spacing:.1em}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.inp,.field select{min-width:0}
+.opt{display:flex;gap:8px;flex-wrap:wrap}
+.opt button{border:1px solid var(--line-strong);background:#fff;padding:12px 16px;min-height:48px;font-size:14px;font-weight:500}
+.opt button[aria-pressed="true"]{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.opt.feat button[aria-pressed="true"]{background:var(--forest);border-color:var(--forest)}
+.suffix{position:relative}
+.suffix .inp{padding-right:110px}
+.suffix span{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--muted)}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;min-height:44px}
+.check input{width:20px;height:20px;accent-color:var(--forest)}
+.stepper{display:flex;align-items:stretch;border:1px solid var(--line-strong);width:100%;max-width:220px;background:#fff}
+.stepper button{width:48px;flex:none;min-height:50px;font-size:22px}
+.stepper output{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;font-weight:600;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.title-row{display:flex;gap:8px}
+.title-row .inp{flex:1}
+.drop{border:1.5px dashed var(--gold);background:var(--paper);padding:26px;text-align:center;cursor:pointer;display:block}
+.drop b{display:block;font-size:15px;margin-bottom:4px}
+.drop span{font-size:13px;color:var(--muted)}
+.drop.over{background:#efe6d6}
+.ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:14px}
+.ph{position:relative;aspect-ratio:4/3;background:#e7e1d6;border:1px solid var(--line)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph .cover{position:absolute;top:6px;left:6px;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:4px 6px}
+.ph .tools{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;background:rgba(3,17,13,.72)}
+.ph .tools button{color:#fff;width:40px;height:36px;font-size:16px}
+.ph.busy::after{content:"Compression…";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+.err{color:var(--danger);font-size:13px;font-weight:500;display:none;margin-top:6px}
+.has-err .err{display:block}
+.has-err .inp,.has-err .opt,.has-err .drop{border-color:var(--danger)}
+.side{position:sticky;top:84px}
+.side .lbl-t{display:block;margin-bottom:10px;color:var(--muted)}
+.side .card{pointer-events:none}
+.side .tip{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:90;background:var(--card);border-top:1px solid var(--line-strong);padding:12px var(--gutter) calc(12px + env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:flex-end}
+.savebar .btn{min-width:140px}
+.savebar .del{margin-right:auto;color:var(--danger);font-size:12px;font-weight:600;text-decoration:underline}
+@media (max-width:980px){
+  .ed{grid-template-columns:minmax(0,1fr)}
+  .side{display:none}
+}
+@media (max-width:640px){
+  .abar .tag-space,.abar .site-link{display:none}
+  .list-head h1{font-size:34px}
+  .add-btn{width:100%}
+  .row{grid-template-columns:96px minmax(0,1fr);gap:12px}
+  .row img{width:96px;height:80px}
+  .row .acts{grid-column:1 / -1;justify-content:stretch}
+  .row .acts .btn{flex:1}
+  .blk{padding:18px 16px}
+  .two,.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .savebar{flex-wrap:wrap;gap:8px}
+  .savebar .del{flex-basis:100%;margin:0;text-align:center}
+  .savebar .btn{min-width:0;flex:1;padding:12px 8px;letter-spacing:.1em}
+  .ed-head h1{font-size:30px}
+}
+@media (max-width:400px){
+  .abar{gap:10px}
+  .abar .brand .name{font-size:12px;letter-spacing:.14em}
+  .abar a,.abar button{padding:8px;letter-spacing:.08em}
+}
+.ed-head{flex-wrap:wrap}
+.load-err{background:var(--card);border:1px solid var(--line);padding:28px;text-align:center}
+.load-err p{color:var(--muted);margin:8px 0 16px}
+</style>
+</head>
+<body>
+
+<div class="demo-bar" id="demoBar" hidden><b>Aperçu</b> · mode démonstration : ce que vous ajoutez reste sur cet appareil, rien n'est publié sur villanova.tn</div>
+<header class="abar">
+  <a href="admin.html" class="brand" style="border:0;padding:0"><img src="assets/logo.png" alt="" style="width:34px;height:34px"><span><span class="name">VILLA <b>NOVA</b></span></span></a>
+  <span class="tag-space">Espace agence</span>
+  <div class="right">
+    <a class="site-link" href="biens.html" target="_blank" rel="noopener">Voir le site</a>
+    <button id="logout" hidden>Déconnexion</button>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<section class="view" id="vLogin">
+  <div class="login">
+    <span class="eyebrow">Espace agence</span>
+    <h1>Gérez vos biens</h1>
+    <div class="demo-note" id="demoNote" hidden>Aperçu : la connexion sera activée à la mise en ligne. Pour l'instant, entrez en mode démonstration.</div>
+    <form id="loginForm" novalidate>
+      <div class="field"><label for="em">E-mail</label><input class="inp" id="em" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="pw">Mot de passe</label><input class="inp" id="pw" type="password" autocomplete="current-password" required></div>
+      <p class="err" id="loginErr" style="display:none;margin-bottom:12px"></p>
+      <button class="btn btn-ink btn-block" id="loginBtn" type="submit">Se connecter</button>
+    </form>
+    <button class="btn btn-gold btn-block" id="demoIn" style="margin-top:10px" hidden>Entrer en mode démo</button>
+  </div>
+</section>
+
+<!-- LIST -->
+<section class="view" id="vList">
+  <div class="amain">
+    <div class="list-head">
+      <div><span class="eyebrow">Catalogue</span><h1 style="margin-top:12px">Vos biens</h1></div>
+      <a class="btn btn-gold add-btn" href="#/nouveau">+ Ajouter un bien</a>
+    </div>
+    <div class="stats" id="stats"></div>
+    <input class="inp search" id="search" type="search" placeholder="Rechercher : réf., titre, quartier…" aria-label="Rechercher un bien">
+    <div class="rows" id="rows"></div>
+    <div class="foot-tools"><span id="countNote"></span><button id="resetDemo">Réinitialiser la démo</button></div>
+  </div>
+</section>
+
+<!-- EDITOR -->
+<section class="view" id="vEdit">
+  <div class="amain">
+    <div class="ed-head"><a class="back" href="#/">‹ Retour</a></div>
+    <div class="ed-head"><h1 id="edTitle">Nouveau bien</h1><span class="refx" id="edRef"></span></div>
+    <div class="ed">
+      <form id="form" novalidate>
+        <div class="blk" data-f="photos">
+          <h2><span>01</span>Photos</h2>
+          <label class="drop" id="drop"><input type="file" id="files" accept="image/*" multiple class="sr">
+            <b>+ Ajouter des photos</b><span>Depuis la galerie du téléphone ou l'ordinateur. La première photo est la couverture.</span></label>
+          <div class="ph-grid" id="phGrid"></div>
+          <div class="err">Ajoutez au moins une photo.</div>
+        </div>
+
+        <div class="blk">
+          <h2><span>02</span>L'essentiel</h2>
+          <div class="field" data-f="transaction"><span class="lbl-t">Transaction</span>
+            <div class="opt" id="optTx"><button type="button" data-v="vente">À vendre</button><button type="button" data-v="location">À louer</button></div>
+            <div class="err">Choisissez vente ou location.</div></div>
+          <div class="field" data-f="type"><span class="lbl-t">Type de bien</span>
+            <div class="opt" id="optType"></div>
+            <div class="err">Choisissez un type.</div></div>
+          <div class="field" data-f="price"><label for="price">Prix</label>
+            <div class="suffix"><input class="inp" id="price" inputmode="numeric" autocomplete="off" placeholder="ex. 450 000"><span id="priceSuf">TND</span></div>
+            <label class="check"><input type="checkbox" id="onAsk"> Prix sur demande (le prix ne s'affiche pas)</label>
+            <div class="err">Indiquez un prix, ou cochez « Prix sur demande ».</div></div>
+        </div>
+
+        <div class="blk">
+          <h2><span>03</span>Emplacement</h2>
+          <div class="two">
+            <div class="field" data-f="city"><label for="city">Ville</label>
+              <select id="city"><option value="">Choisir…</option></select>
+              <div class="err">Choisissez la ville.</div></div>
+            <div class="field"><label for="area">Quartier</label>
+              <input class="inp" id="area" list="areas" placeholder="ex. La Marsa"><datalist id="areas"></datalist></div>
+          </div>
+          <p class="hint" style="font-size:12px;color:var(--muted)">Seul le quartier est affiché. L'adresse exacte n'est jamais publiée.</p>
+        </div>
+
+        <div class="blk">
+          <h2><span>04</span>Caractéristiques</h2>
+          <div class="three">
+            <div class="field" data-show="surface"><label for="surface">Surface <span class="hint">m²</span></label><input class="inp" id="surface" inputmode="numeric"></div>
+            <div class="field" data-show="land"><label for="land">Terrain <span class="hint">m²</span></label><input class="inp" id="land" inputmode="numeric"></div>
+            <div class="field" data-show="floor"><label for="floor">Étage <span class="hint">0 = RDC</span></label><input class="inp" id="floor" inputmode="numeric"></div>
+            <div class="field" data-show="year"><label for="year">Construction <span class="hint">année</span></label><input class="inp" id="year" inputmode="numeric" placeholder="ex. 2018"></div>
+          </div>
+          <div class="two" style="margin-top:4px">
+            <div class="field" data-show="rooms"><span class="lbl-t">Chambres</span><div class="stepper" data-step="rooms"><button type="button" data-d="-1" aria-label="Moins">−</button><output id="rooms">S+0</output><button type="button" data-d="1" aria-label="Plus">+</button></div></div>
+            <div class="field" data-show="baths"><span class="lbl-t">Salles de bain</span><div class="stepper" data-step="baths"><button type="button" data-d="-1" aria-label="Moins">−</button><output id="baths">0</output><button type="button" data-d="1" aria-label="Plus">+</button></div></div>
+          </div>
+          <div class="field" data-show="feat" style="margin-top:6px"><span class="lbl-t">Équipements</span><div class="opt feat" id="optFeat"></div></div>
+        </div>
+
+        <div class="blk">
+          <h2><span>05</span>Conditions</h2>
+          <div class="two">
+            <div class="field" data-showtx="vente"><label for="deed">Titre de propriété</label>
+              <select id="deed"><option value="">Non précisé</option></select></div>
+            <div class="field" data-showtx="location"><label for="avail">Disponible à partir du</label><input class="inp" id="avail" type="date"></div>
+            <div class="field" data-showtx="location"><label for="deposit">Caution <span class="hint">en mois de loyer</span></label><input class="inp" id="deposit" inputmode="numeric" placeholder="ex. 2"></div>
+            <div class="field"><label for="charges">Charges / syndic <span class="hint">TND par mois, si applicable</span></label><input class="inp" id="charges" inputmode="numeric"></div>
+          </div>
+        </div>
+
+        <div class="blk">
+          <h2><span>06</span>Annonce</h2>
+          <div class="field" data-f="title"><label for="title">Titre</label>
+            <div class="title-row"><input class="inp" id="title" maxlength="90" placeholder="ex. Appartement S+2 à louer, Lac 2"><button type="button" class="btn btn-line" id="suggest">Suggérer</button></div>
+            <div class="err">Donnez un titre au bien.</div></div>
+          <div class="field"><label for="tagline">Accroche <span class="hint">une phrase, affichée en grand sur la page du bien</span></label>
+            <input class="inp" id="tagline" maxlength="90" placeholder="ex. Une villa de plain-pied qui vit autour de sa piscine"></div>
+          <div class="field"><label for="desc">Description <span class="hint">ce que le visiteur doit savoir, en quelques lignes</span></label><textarea id="desc"></textarea></div>
+          <div class="field" data-f="video"><label for="video">Vidéo <span class="hint">lien YouTube, Instagram, TikTok ou Facebook</span></label>
+            <input class="inp" id="video" type="url" inputmode="url" autocomplete="off" placeholder="https://">
+            <div class="err">Le lien doit commencer par https://</div></div>
+        </div>
+
+        <div class="blk">
+          <h2><span>07</span>Publication</h2>
+          <div class="field"><span class="lbl-t">Statut</span><div class="opt" id="optStatus"><button type="button" data-v="disponible">Disponible</button><button type="button" data-v="reserve">Réservé</button><button type="button" data-v="vendu" id="soldBtn">Vendu</button></div></div>
+          <label class="check"><input type="checkbox" id="published" checked> Visible sur le site</label>
+          <label class="check"><input type="checkbox" id="featured"> Exclusivité (mandat exclusif : badge doré, affiché en premier)</label>
+        </div>
+
+        <div class="blk blk-private">
+          <h2><span>08</span>Informations privées</h2>
+          <p class="priv-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Visible uniquement par l'agence. Jamais affiché sur le site.</p>
+          <div class="two">
+            <div class="field"><label for="ownerName">Propriétaire</label><input class="inp" id="ownerName" autocomplete="off"></div>
+            <div class="field"><label for="ownerPhone">Téléphone du propriétaire</label><input class="inp" id="ownerPhone" type="tel" inputmode="tel" autocomplete="off" placeholder="+216"></div>
+          </div>
+          <div class="field"><label for="address">Adresse exacte</label><input class="inp" id="address" autocomplete="off"></div>
+          <div class="field"><label for="notes">Notes internes <span class="hint">commission, clés, horaires de visite</span></label><textarea id="notes" style="min-height:110px"></textarea></div>
+        </div>
+      </form>
+
+      <aside class="side">
+        <span class="lbl-t">Aperçu de l'annonce</span>
+        <div id="preview"></div>
+        <p class="tip">C'est exactement ce que les visiteurs verront dans la liste des biens.</p>
+      </aside>
+    </div>
+  </div>
+  <div class="savebar">
+    <button class="del" id="delBtn" hidden>Supprimer</button>
+    <a class="btn btn-line" href="#/">Annuler</a>
+    <button class="btn btn-ink" id="saveBtn">Enregistrer</button>
+  </div>
+</section>
+
+<script src="assets/vn-config.js?v=8"></script>
+<script src="assets/vn-data.js?v=8"></script>
+<script src="assets/vn-ui.js?v=8"></script>
+<script>
+(function () {
+  const V = VN, U = VNUI, $ = (id) => document.getElementById(id);
+  const DEMO = V.store.demo;
+  $('demoBar').hidden = !DEMO; $('demoNote').hidden = !DEMO; $('demoIn').hidden = !DEMO; $('resetDemo').hidden = !DEMO;
+
+  /* ── routing ──────────────────────────────────────────── */
+  function show(v) { document.querySelectorAll('.view').forEach(x => x.classList.toggle('on', x.id === v)); window.scrollTo(0, 0); }
+  async function route() {
+    let ok = false;
+    try { ok = await V.auth.session(); }
+    catch (e) { show('vLogin'); $('logout').hidden = true; $('loginErr').textContent = e.message; $('loginErr').style.display = 'block'; return; }
+    if (!ok) { show('vLogin'); $('logout').hidden = true; return; }
+    $('logout').hidden = false;
+    const h = location.hash.replace(/^#\/?/, '');
+    if (h === 'nouveau') return openEditor(null);
+    if (h.startsWith('modifier/')) return openEditor(decodeURIComponent(h.slice(9)));
+    show('vList'); renderList();
+  }
+  window.addEventListener('hashchange', route);
+  $('demoIn').onclick = async () => { await V.auth.signIn(); route(); };
+  $('loginForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const err = $('loginErr'); err.style.display = 'none';
+    if (DEMO) { await V.auth.signIn(); return route(); }
+    $('loginBtn').disabled = true;
+    try { await V.auth.signIn($('em').value.trim(), $('pw').value); $('pw').value = ''; route(); }
+    catch (x) { err.textContent = x.message; err.style.display = 'block'; }
+    finally { $('loginBtn').disabled = false; }
+  };
+  $('logout').onclick = async () => { await V.auth.signOut(); location.hash = ''; route(); };
+
+  /* ── list ─────────────────────────────────────────────── */
+  let tab = 'all';
+  const TABS = { all: 'Tous', online: 'En ligne', reserve: 'Réservés', vendu: 'Vendus / loués', off: 'Masqués' };
+  const inTab = (p, t) => t === 'all' || (t === 'online' && p.published && p.status === 'disponible') || (t === 'reserve' && p.status === 'reserve') || (t === 'vendu' && p.status === 'vendu') || (t === 'off' && !p.published);
+  function shareText(p) { return '🏡 ' + p.title + '\n' + V.priceText(p) + ' · ' + V.where(p) + '\nRéf. ' + p.ref + '\n' + V.propertyUrl(p); }
+  const shareWA = (p) => 'https://wa.me/?text=' + encodeURIComponent(shareText(p));
+
+  async function renderList() {
+    let rows;
+    try { rows = await V.store.list(); }
+    catch (e) {
+      $('rows').innerHTML = '<div class="load-err"><b>Connexion impossible</b><p>' + V.esc(e.message) + '</p><button class="btn btn-ink" id="retryList">Réessayer</button></div>';
+      $('retryList').onclick = renderList;
+      return;
+    }
+    const all = rows.sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
+    $('stats').innerHTML = Object.entries(TABS).map(([k, l]) => '<button class="stat" data-tab="' + k + '" aria-pressed="' + (tab === k) + '"><b>' + all.filter(p => inTab(p, k)).length + '</b>' + l + '</button>').join('');
+    const q = $('search').value.trim().toLowerCase();
+    const priv = (p) => p.private || {};
+    const list = all.filter(p => inTab(p, tab) && (!q || [p.ref, p.title, p.area, p.city, priv(p).owner_name, priv(p).owner_phone].join(' ').toLowerCase().includes(q)));
+    $('rows').innerHTML = list.length ? list.map(p => {
+      const th = p.photos && p.photos[0] ? (p.photos[0].thumb || p.photos[0].full) : 'assets/placeholder.jpg';
+      return '<div class="row' + (p.published ? '' : ' is-off') + '" data-id="' + V.esc(p.id) + '">' +
+        '<img src="' + V.esc(th) + '" alt="">' +
+        '<div><h3>' + V.esc(p.title) + '</h3>' +
+        '<div class="pr">' + V.priceHTML(p) + '</div>' +
+        '<div class="sub"><span>Réf. ' + V.esc(p.ref) + '</span><span>' + V.esc(V.where(p)) + '</span>' +
+        '<span class="pill ' + p.status + '">' + V.statusLabel(p) + '</span>' + (p.published ? '' : '<span class="pill off">Masqué</span>') + '</div>' +
+        ((priv(p).owner_name || priv(p).owner_phone) ? '<div class="owner-line">Propriétaire : ' + V.esc(priv(p).owner_name || '') +
+          (priv(p).owner_phone ? (priv(p).owner_name ? ' · ' : '') + '<a href="tel:' + V.esc(String(priv(p).owner_phone).replace(/[^\d+]/g, '')) + '">' + V.esc(priv(p).owner_phone) + '</a>' : '') + '</div>' : '') +
+        '</div>' +
+        '<div class="acts">' +
+        '<a class="btn btn-ink btn-sm" href="#/modifier/' + encodeURIComponent(p.id) + '">Modifier</a>' +
+        '<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="' + shareWA(p) + '" title="Partager dans vos groupes et votre statut WhatsApp">' + U.I.wa + 'Partager</a>' +
+        '<a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="bien.html?ref=' + encodeURIComponent(p.ref) + '">Voir</a>' +
+        '</div></div>';
+    }).join('') : '<div class="empty-list">' + (all.length ? 'Aucun bien dans cette vue.' : 'Aucun bien pour l\'instant. Ajoutez le premier.') + '</div>';
+    $('countNote').textContent = all.filter(p => p.published && p.status !== 'vendu').length + ' bien(s) visibles sur le site';
+  }
+  $('stats').onclick = (e) => { const b = e.target.closest('[data-tab]'); if (b) { tab = b.dataset.tab; renderList(); } };
+  $('search').oninput = () => renderList();
+  $('resetDemo').onclick = async () => { if (confirm('Remettre les 6 biens de démonstration ? Vos ajouts de test seront effacés.')) { await V.store.reset(); renderList(); U.toast('Démo réinitialisée'); } };
+
+  /* ── editor ───────────────────────────────────────────── */
+  let P = null, titleTouched = false;
+  const blank = () => ({ transaction: '', type: '', price: null, city: 'Tunis', area: '', surface: null, land_surface: null, rooms: 0, bathrooms: 0, floor: null, year_built: null, features: [], title: '', tagline: '', description: '', photos: [], status: 'disponible', published: true, featured: false,
+    title_deed: null, available_from: null, deposit_months: null, charges: null, video_url: null,
+    private: { owner_name: '', owner_phone: '', address: '', notes: '' } });
+  $('deed').innerHTML += Object.entries(V.TITLE_DEEDS).map(([k, l]) => '<option value="' + k + '">' + l + '</option>').join('');
+
+  $('optType').innerHTML = Object.entries(V.TYPES).map(([k, l]) => '<button type="button" data-v="' + k + '">' + l + '</button>').join('');
+  $('optFeat').innerHTML = Object.entries(V.FEATURES).map(([k, l]) => '<button type="button" data-v="' + k + '">' + l + '</button>').join('');
+  $('city').innerHTML += V.CITIES.map(c => '<option>' + c + '</option>').join('') + '<option value="Autre">Autre</option>';
+  $('areas').innerHTML = V.AREAS.map(a => '<option value="' + a + '">').join('');
+
+  const SHOW = { // which fields make sense for which type
+    surface: (t) => t !== 'terrain', land: (t) => ['villa', 'maison', 'terrain'].includes(t), floor: (t) => ['appartement', 'duplex', 'etage_villa', 'bureau', 'commerce'].includes(t),
+    year: (t) => t !== 'terrain', rooms: (t) => V.RESIDENTIAL.includes(t), baths: (t) => !['terrain', 'depot'].includes(t), feat: (t) => t !== 'terrain'
+  };
+  const numOrNull = (v) => { const n = parseInt(String(v).replace(/\D/g, ''), 10); return isNaN(n) ? null : n; };
+  const fmtInput = (n) => n == null ? '' : V.num(n);
+
+  async function openEditor(id) {
+    show('vEdit');
+    let all;
+    try { all = await V.store.list(); }
+    catch (e) { U.toast('Connexion impossible : ' + V.esc(e.message), 6000); location.hash = '#/'; return; }
+    const found = id ? all.find(p => p.id === id) : null;
+    if (id && !found) { location.hash = '#/'; return; }
+    P = found ? JSON.parse(JSON.stringify(found)) : blank();
+    titleTouched = !!(found && found.title);
+    $('edTitle').textContent = found ? 'Modifier le bien' : 'Nouveau bien';
+    $('edRef').textContent = found ? 'Réf. ' + found.ref : 'Réf. ' + await V.store.nextRef();
+    $('delBtn').hidden = !found;
+    fill(); clearErrors(); renderPhotos(); refresh();
+  }
+  function fill() {
+    $('price').value = fmtInput(P.price); $('onAsk').checked = !P.price && !!P.id;
+    $('city').value = P.city || ''; $('area').value = P.area || '';
+    $('surface').value = P.surface || ''; $('land').value = P.land_surface || ''; $('floor').value = P.floor == null ? '' : P.floor; $('year').value = P.year_built || '';
+    $('title').value = P.title || ''; $('tagline').value = P.tagline || ''; $('desc').value = P.description || '';
+    $('published').checked = !!P.published; $('featured').checked = !!P.featured;
+    $('deed').value = P.title_deed || ''; $('avail').value = P.available_from || ''; $('deposit').value = P.deposit_months == null ? '' : P.deposit_months;
+    $('charges').value = fmtInput(P.charges); $('video').value = P.video_url || '';
+    const pv = P.private || {};
+    $('ownerName').value = pv.owner_name || ''; $('ownerPhone').value = pv.owner_phone || ''; $('address').value = pv.address || ''; $('notes').value = pv.notes || '';
+  }
+  function refresh() {
+    const press = (wrap, v) => $(wrap).querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', Array.isArray(v) ? v.includes(b.dataset.v) : b.dataset.v === v));
+    press('optTx', P.transaction); press('optType', P.type); press('optFeat', P.features); press('optStatus', P.status);
+    $('soldBtn').textContent = P.transaction === 'location' ? 'Loué' : 'Vendu';
+    $('priceSuf').textContent = P.transaction === 'location' ? 'TND / mois' : 'TND';
+    $('price').disabled = $('onAsk').checked;
+    document.querySelectorAll('[data-show]').forEach(el => { el.style.display = !P.type || SHOW[el.dataset.show](P.type) ? '' : 'none'; });
+    document.querySelectorAll('[data-showtx]').forEach(el => { el.style.display = !P.transaction || el.dataset.showtx === P.transaction ? '' : 'none'; });
+    $('rooms').textContent = 'S+' + (P.rooms || 0); $('baths').textContent = P.bathrooms || 0;
+    if (!titleTouched) { const s = V.suggestTitle(P); $('title').value = P.type && P.transaction ? s : ''; P.title = $('title').value; }
+    preview();
+  }
+  let pt;
+  function preview() {
+    clearTimeout(pt);
+    pt = setTimeout(async () => {
+      const ref = P.ref || $('edRef').textContent.replace('Réf. ', '');
+      const p = Object.assign({ created_at: new Date().toISOString() }, P, { ref, title: P.title || 'Titre du bien' });
+      $('preview').innerHTML = U.card(p, { live: false });
+      U.bindSlides($('preview'));
+    }, 80);
+  }
+  function collect() {
+    P.price = $('onAsk').checked ? null : numOrNull($('price').value);
+    P.city = $('city').value; P.area = $('area').value.trim();
+    P.surface = numOrNull($('surface').value); P.land_surface = numOrNull($('land').value);
+    P.floor = $('floor').value === '' ? null : numOrNull($('floor').value); P.year_built = numOrNull($('year').value);
+    P.title = $('title').value.trim(); P.tagline = $('tagline').value.trim(); P.description = $('desc').value.trim();
+    P.published = $('published').checked; P.featured = $('featured').checked;
+    P.title_deed = $('deed').value || null; P.available_from = $('avail').value || null;
+    P.deposit_months = numOrNull($('deposit').value); P.charges = numOrNull($('charges').value); P.video_url = $('video').value.trim() || null;
+    if (P.transaction === 'vente') { P.available_from = null; P.deposit_months = null; }
+    if (P.transaction === 'location') P.title_deed = null;
+    P.private = { owner_name: $('ownerName').value.trim(), owner_phone: $('ownerPhone').value.trim(), address: $('address').value.trim(), notes: $('notes').value.trim() };
+    // drop values that don't apply to the chosen type
+    if (P.type) { if (!SHOW.surface(P.type)) P.surface = null; if (!SHOW.land(P.type)) P.land_surface = null; if (!SHOW.floor(P.type)) P.floor = null; if (!SHOW.rooms(P.type)) P.rooms = 0; if (!SHOW.baths(P.type)) P.bathrooms = 0; if (!SHOW.feat(P.type)) P.features = []; if (!SHOW.year(P.type)) P.year_built = null; }
+  }
+
+  $('form').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-v]'); if (!b) return;
+    const g = b.parentElement.id;
+    if (g === 'optTx') P.transaction = b.dataset.v;
+    if (g === 'optType') P.type = b.dataset.v;
+    if (g === 'optStatus') P.status = b.dataset.v;
+    if (g === 'optFeat') { const f = b.dataset.v; P.features = P.features.includes(f) ? P.features.filter(x => x !== f) : P.features.concat(f); }
+    b.closest('.field') && b.closest('.field').classList.remove('has-err');
+    refresh();
+  });
+  document.querySelectorAll('[data-step]').forEach(s => s.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    const k = s.dataset.step === 'rooms' ? 'rooms' : 'bathrooms';
+    P[k] = Math.max(0, Math.min(12, (P[k] || 0) + +b.dataset.d)); refresh();
+  }));
+  $('price').addEventListener('input', (e) => { const n = numOrNull(e.target.value); e.target.value = fmtInput(n); collect(); preview(); });
+  $('charges').addEventListener('input', (e) => { e.target.value = fmtInput(numOrNull(e.target.value)); });
+  ['surface', 'land', 'floor', 'year', 'tagline', 'desc', 'city', 'area', 'published', 'featured', 'deed', 'avail', 'deposit', 'charges', 'video', 'ownerName', 'ownerPhone', 'address', 'notes'].forEach(id => $(id).addEventListener('input', () => { collect(); if (!titleTouched && (id === 'area' || id === 'land')) refresh(); else preview(); }));
+  $('city').addEventListener('change', () => { collect(); preview(); });
+  $('onAsk').onchange = () => { if ($('onAsk').checked) $('price').value = ''; collect(); refresh(); };
+  $('title').addEventListener('input', () => { titleTouched = $('title').value.trim() !== ''; collect(); preview(); });
+  $('suggest').onclick = () => { collect(); $('title').value = V.suggestTitle(P); titleTouched = true; collect(); preview(); };
+
+  /* photos */
+  function renderPhotos() {
+    $('phGrid').innerHTML = P.photos.map((ph, i) => '<div class="ph"><img src="' + V.esc(ph.thumb || ph.full) + '" alt="Photo ' + (i + 1) + '">' +
+      (i === 0 ? '<span class="cover">Couverture</span>' : '') +
+      '<div class="tools"><button type="button" data-ph="left" data-i="' + i + '" aria-label="Déplacer à gauche">‹</button>' +
+      (i ? '<button type="button" data-ph="cover" data-i="' + i + '" aria-label="Mettre en couverture">★</button>' : '<span></span>') +
+      '<button type="button" data-ph="del" data-i="' + i + '" aria-label="Supprimer la photo">×</button>' +
+      '<button type="button" data-ph="right" data-i="' + i + '" aria-label="Déplacer à droite">›</button></div></div>').join('');
+    preview();
+  }
+  $('phGrid').onclick = (e) => {
+    const b = e.target.closest('[data-ph]'); if (!b) return;
+    const i = +b.dataset.i, a = P.photos;
+    if (b.dataset.ph === 'del') a.splice(i, 1);
+    if (b.dataset.ph === 'cover') a.unshift(a.splice(i, 1)[0]);
+    if (b.dataset.ph === 'left' && i > 0) [a[i - 1], a[i]] = [a[i], a[i - 1]];
+    if (b.dataset.ph === 'right' && i < a.length - 1) [a[i + 1], a[i]] = [a[i], a[i + 1]];
+    renderPhotos();
+  };
+  let uploading = 0; // Save waits for photos: saving mid-upload would drop them and orphan the files
+  function uploadState() { $('saveBtn').disabled = uploading > 0; $('saveBtn').textContent = uploading > 0 ? 'Envoi des photos…' : 'Enregistrer'; }
+  async function addFiles(files) {
+    const list = [...files].filter(f => f.type.startsWith('image/'));
+    if (!list.length) return;
+    $('drop').closest('.blk').classList.remove('has-err');
+    const busy = list.map(() => { const d = document.createElement('div'); d.className = 'ph busy'; $('phGrid').append(d); return d; });
+    uploading += list.length; uploadState();
+    for (const f of list) {
+      try { P.photos.push(await V.store.processPhoto(f)); } catch (err) { U.toast('Photo non envoyée (' + V.esc(f.name) + ') : ' + V.esc((err && err.message) || 'erreur inconnue'), 7000); }
+      busy.shift().remove();
+      uploading--; uploadState();
+    }
+    renderPhotos();
+  }
+  $('files').onchange = (e) => { addFiles(e.target.files); e.target.value = ''; };
+  const drop = $('drop');
+  ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
+
+  /* save */
+  function clearErrors() { document.querySelectorAll('.has-err').forEach(x => x.classList.remove('has-err')); }
+  function validate() {
+    clearErrors();
+    const bad = [];
+    if (!P.photos.length) bad.push('[data-f=photos]');
+    if (!P.transaction) bad.push('[data-f=transaction]');
+    if (!P.type) bad.push('[data-f=type]');
+    if (!P.price && !$('onAsk').checked) bad.push('[data-f=price]');
+    if (!P.city) bad.push('[data-f=city]');
+    if (!P.title) bad.push('[data-f=title]');
+    if (P.video_url && !/^https:\/\/\S+$/i.test(P.video_url)) bad.push('[data-f=video]');
+    bad.forEach(s => document.querySelector(s).classList.add('has-err'));
+    if (bad.length) { document.querySelector(bad[0]).scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    return !bad.length;
+  }
+  $('saveBtn').onclick = async () => {
+    collect();
+    if (!validate()) { U.toast('Il manque quelques informations'); return; }
+    $('saveBtn').disabled = true;
+    try {
+      const saved = await V.store.save(P);
+      location.hash = '#/';
+      setTimeout(() => U.toast('Bien enregistré · <a target="_blank" rel="noopener" href="' + shareWA(saved) + '">Partager sur WhatsApp</a>', 6000), 120);
+    } catch (e) {
+      U.toast('Enregistrement impossible : ' + V.esc(e.message || e));
+    } finally { uploadState(); }
+  };
+  $('delBtn').onclick = async () => {
+    if (!confirm('Supprimer définitivement « ' + (P.title || 'ce bien') + ' » ? Pour le retirer du site sans le perdre, décochez plutôt « Visible sur le site ».')) return;
+    try { await V.store.remove(P.id); location.hash = '#/'; setTimeout(() => U.toast('Bien supprimé'), 120); }
+    catch (e) { U.toast('Suppression impossible : ' + V.esc(e.message || e), 6000); }
+  };
+
+  route();
+})();
+</script>
+</body>
+</html>

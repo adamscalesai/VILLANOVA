@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nos biens à vendre et à louer | Villa Nova Holdings, immobilier en Tunisie</title>
+<meta name="description" content="Appartements, villas, maisons, terrains et bureaux à vendre et à louer dans le Grand Tunis. Villa Nova Holdings, réponse sur WhatsApp en moins de 5 minutes.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Villa Nova Holdings">
+<meta property="og:title" content="Nos biens à vendre et à louer | Villa Nova Holdings">
+<meta property="og:description" content="Appartements, villas, terrains et bureaux dans le Grand Tunis. Réponse sur WhatsApp en moins de 5 minutes.">
+<meta property="og:image" content="https://www.villanova.tn/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/vn.css?v=8">
+</head>
+<body>
+
+<header class="lhead">
+  <div class="wrap">
+    <span class="caps kicker">Villa Nova · Catalogue</span>
+    <h1 id="h1">Tous nos <em>biens</em></h1>
+    <p>Appartements, villas, terrains et bureaux dans le Grand Tunis. Un bien vous plaît&nbsp;? Nous répondons sur WhatsApp en moins de 5 minutes.</p>
+  </div>
+</header>
+
+<div class="fbar" id="fbar">
+  <div class="wrap">
+    <div class="tabs" role="group" aria-label="Transaction">
+      <button data-t="" aria-pressed="true">Tout</button>
+      <button data-t="vente" aria-pressed="false">Acheter</button>
+      <button data-t="location" aria-pressed="false">Louer</button>
+    </div>
+    <span class="vsep"></span>
+    <div class="tsel"><select id="type" aria-label="Type de bien"></select></div>
+    <div class="tsel"><select id="zone" aria-label="Zone"></select></div>
+    <div class="tsel"><select id="budget" aria-label="Budget"></select></div>
+    <button class="tbtn" id="moreBtn" aria-expanded="false" aria-controls="panel"></button>
+    <a class="btn btn-gold btn-sm alert-btn" id="alertBtn" target="_blank" rel="noopener"></a>
+  </div>
+  <div class="panel" id="panel">
+    <div class="wrap">
+      <div><h4 class="caps">Chambres</h4><div class="opts" id="roomOpts"></div></div>
+      <div><h4 class="caps">Équipements</h4><div class="opts" id="featOpts"></div></div>
+      <div><h4 class="caps">Référence</h4><input class="ref-in" id="refBox" placeholder="VN-0001" aria-label="Rechercher une référence"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="main">
+  <div class="rhead">
+    <div class="count" id="count"></div>
+    <div class="tools">
+      <button class="fav-t" id="favBtn" aria-pressed="false"></button>
+      <div class="tsel"><select id="sort" aria-label="Trier">
+        <option value="recent">Plus récents</option>
+        <option value="asc">Prix croissant</option>
+        <option value="desc">Prix décroissant</option>
+      </select></div>
+    </div>
+  </div>
+  <div class="active-tags" id="tags"></div>
+  <div id="shortlist"></div>
+  <div id="empty"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<section class="past wrap" id="past" hidden>
+  <h2>Vendus et loués récemment</h2>
+  <div class="grid" id="pastGrid" style="padding-bottom:0"></div>
+</section>
+
+<section class="owner" id="proprietaires">
+  <div class="wrap">
+    <div>
+      <span class="caps kicker">Propriétaires</span>
+      <h2>Vous vendez ou louez <em>votre bien&nbsp;?</em></h2>
+      <p>Confiez-le à Villa Nova. Nous l'estimons, nous le présentons ici avec le soin que vous voyez sur cette page, et nous vous accompagnons jusqu'à la signature.</p>
+    </div>
+    <div>
+      <ol>
+        <li>Estimation gratuite en 24 h, au prix réel du marché</li>
+        <li>Votre bien publié sur villanova.tn et présenté à nos acheteurs</li>
+        <li>Accompagnement jusqu'à la signature</li>
+      </ol>
+      <div class="acts">
+        <a class="btn btn-gold" id="ownerWa" target="_blank" rel="noopener">Confier mon bien</a>
+        <a class="btn btn-line-dark" href="index.html#estimation">Estimer mon bien</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="assets/vn-config.js?v=8"></script>
+<script src="assets/vn-data.js?v=8"></script>
+<script src="assets/vn-ui.js?v=8"></script>
+<script>
+(async function () {
+  const V = VN, U = VNUI, $ = (id) => document.getElementById(id);
+  const q = new URLSearchParams(location.search);
+  U.shell(q.get('t') || 'biens');
+  $('ownerWa').href = V.wa("Bonjour Villa Nova, je souhaite vous confier mon bien.\nType : \nVente ou location : \nQuartier : \nSurface : ");
+
+  let pub;
+  try { pub = await V.store.listPublic(); }
+  catch (e) {
+    $('count').textContent = '';
+    $('empty').innerHTML = '<div class="empty"><div><h3>Connexion impossible.</h3><p>Le catalogue n\'a pas pu se charger. Vérifiez votre connexion et réessayez, ou écrivez-nous sur WhatsApp.</p></div>' +
+      '<div style="display:grid;gap:10px"><button class="btn btn-ink" onclick="location.reload()">Réessayer</button><a class="btn btn-wa" target="_blank" rel="noopener" href="' + V.wa('Bonjour Villa Nova, je cherche un bien : ') + '">' + U.I.wa + 'WhatsApp</a></div></div>';
+    return;
+  }
+  const all = pub.filter(p => p.status !== 'vendu');
+  const sold = pub.filter(p => p.status === 'vendu');
+
+  /* ── state <-> URL ──────────────────────────────────── */
+  const S = {
+    t: q.get('t') || '', type: q.get('type') || '', zone: q.get('zone') || '',
+    budget: q.get('budget') || '', ch: q.get('ch') || '', feat: (q.get('feat') || '').split(',').filter(Boolean),
+    ref: q.get('ref') || '', fav: q.get('fav') === '1', sort: q.get('sort') || 'recent'
+  };
+  if (!['', 'vente', 'location'].includes(S.t)) S.t = '';
+  if (S.type && !V.TYPE_GROUPS[S.type]) S.type = '';
+  // URL values are untrusted: keep only known ones (a bad link must never blank the catalogue)
+  S.feat = S.feat.filter(f => V.FEATURES[f]);
+  if (S.budget !== '' && !(S.t && V.BUDGETS[S.t][+S.budget])) S.budget = '';
+  if (S.ch && !['1', '2', '3', '4'].includes(S.ch)) S.ch = '';
+  if (!['recent', 'asc', 'desc'].includes(S.sort)) S.sort = 'recent';
+  if (S.zone && !/^[ac]:/.test(S.zone)) S.zone = '';
+  function syncURL() {
+    const p = new URLSearchParams();
+    if (S.t) p.set('t', S.t); if (S.type) p.set('type', S.type); if (S.zone) p.set('zone', S.zone);
+    if (S.budget !== '') p.set('budget', S.budget); if (S.ch) p.set('ch', S.ch); if (S.feat.length) p.set('feat', S.feat.join(','));
+    if (S.ref) p.set('ref', S.ref); if (S.fav) p.set('fav', '1'); if (S.sort !== 'recent') p.set('sort', S.sort);
+    history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash);
+  }
+
+  /* ── matching ───────────────────────────────────────── */
+  const inZone = (p, z) => !z || (z.startsWith('a:') ? p.area === z.slice(2) : p.city === z.slice(2));
+  const inBudget = (p, t, b) => {
+    if (b === '' || !t) return true;
+    const r = V.BUDGETS[t][+b]; if (!r) return true;
+    if (!p.price) return true; // "prix sur demande" is never filtered out
+    return p.price >= r[0] && (!r[1] || p.price < r[1]);
+  };
+  function match(p, s, skip) {
+    skip = skip || {};
+    if (!skip.t && s.t && p.transaction !== s.t) return false;
+    if (!skip.type && s.type && !V.TYPE_GROUPS[s.type].types.includes(p.type)) return false;
+    if (!skip.zone && !inZone(p, s.zone)) return false;
+    if (!skip.budget && !inBudget(p, s.t, s.budget)) return false;
+    if (!skip.ch && s.ch && !((p.rooms || 0) >= +s.ch)) return false;
+    if (!skip.feat && s.feat.length && !s.feat.every(f => (p.features || []).includes(f))) return false;
+    if (!skip.ref && s.ref && !String(p.ref).toLowerCase().includes(s.ref.toLowerCase().trim())) return false;
+    return true;
+  }
+  function sortList(list) {
+    const byPrice = (d) => (a, b) => (!a.price) - (!b.price) || d * ((a.price || 0) - (b.price || 0));
+    if (S.sort === 'asc') return list.sort(byPrice(1));
+    if (S.sort === 'desc') return list.sort(byPrice(-1));
+    return list.sort((a, b) => (b.featured - a.featured) || (new Date(b.created_at) - new Date(a.created_at)));
+  }
+  const fmtB = (r) => r[1] === 0 ? 'Plus de ' + V.num(r[0]) : (r[0] === 0 ? 'Moins de ' + V.num(r[1]) : V.num(r[0]) + ' à ' + V.num(r[1]));
+  function describe(s) {
+    const parts = [];
+    if (s.type) parts.push(V.TYPE_GROUPS[s.type].label.toLowerCase());
+    if (s.t) parts.push(s.t === 'vente' ? 'à acheter' : 'à louer');
+    if (s.zone) parts.push(s.zone.slice(2));
+    if (s.budget !== '' && s.t) parts.push('budget ' + fmtB(V.BUDGETS[s.t][+s.budget]).toLowerCase() + ' TND' + (s.t === 'location' ? '/mois' : ''));
+    if (s.ch) parts.push('S+' + s.ch + ' minimum');
+    s.feat.forEach(f => parts.push(V.FEATURES[f].toLowerCase()));
+    return parts;
+  }
+
+  /* ── controls ───────────────────────────────────────── */
+  function renderControls() {
+    document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === S.t));
+    $('h1').innerHTML = S.t === 'vente' ? 'Biens à <em>vendre</em>' : S.t === 'location' ? 'Biens à <em>louer</em>' : 'Tous nos <em>biens</em>';
+
+    $('type').innerHTML = '<option value="">Tous les types</option>' + Object.entries(V.TYPE_GROUPS).map(([k, g]) => {
+      const n = all.filter(p => match(p, Object.assign({}, S, { type: k }))).length;
+      return '<option value="' + k + '"' + (!n && S.type !== k ? ' disabled' : '') + '>' + g.label + ' (' + n + ')</option>';
+    }).join('');
+    $('type').value = S.type; $('type').classList.toggle('on', !!S.type);
+
+    const cities = {};
+    all.filter(p => match(p, S, { zone: 1 })).forEach(p => { const c = p.city || 'Autres'; cities[c] = cities[c] || {}; cities[c][p.area || ''] = (cities[c][p.area || ''] || 0) + 1; });
+    let zh = '<option value="">Toutes les zones</option>';
+    Object.keys(cities).sort().forEach(c => {
+      const areas = cities[c], tot = Object.values(areas).reduce((a, b) => a + b, 0);
+      zh += '<optgroup label="' + V.esc(c) + '"><option value="c:' + V.esc(c) + '">Tout ' + V.esc(c) + ' (' + tot + ')</option>';
+      Object.keys(areas).filter(Boolean).sort().forEach(a => { zh += '<option value="a:' + V.esc(a) + '">' + V.esc(a) + ' (' + areas[a] + ')</option>'; });
+      zh += '</optgroup>';
+    });
+    if (S.zone && !zh.includes('value="' + V.esc(S.zone) + '"')) zh += '<option value="' + V.esc(S.zone) + '">' + V.esc(S.zone.slice(2)) + ' (0)</option>';
+    $('zone').innerHTML = zh; $('zone').value = S.zone; $('zone').classList.toggle('on', !!S.zone);
+
+    const bs = $('budget');
+    if (!S.t) { bs.innerHTML = '<option value="">Budget</option>'; bs.disabled = true; bs.title = 'Choisissez Acheter ou Louer'; }
+    else {
+      bs.disabled = false; bs.title = '';
+      bs.innerHTML = '<option value="">Budget' + (S.t === 'location' ? ' / mois' : '') + '</option>' + V.BUDGETS[S.t].map((r, i) => '<option value="' + i + '">' + fmtB(r) + ' TND</option>').join('');
+      bs.value = S.budget;
+    }
+    bs.classList.toggle('on', S.budget !== '' && !!S.t);
+
+    $('roomOpts').innerHTML = [1, 2, 3, 4].map(n => '<button class="opt-b" data-ch="' + n + '" aria-pressed="' + (S.ch == n) + '">S+' + n + ' et plus</button>').join('');
+    $('featOpts').innerHTML = ['piscine', 'jardin', 'meuble', 'parking', 'vue_mer', 'ascenseur'].map(f => '<button class="opt-b" data-feat="' + f + '" aria-pressed="' + S.feat.includes(f) + '">' + V.FEATURES[f] + '</button>').join('');
+    $('refBox').value = S.ref;
+    const more = (S.ch ? 1 : 0) + S.feat.length + (S.ref ? 1 : 0);
+    $('moreBtn').innerHTML = U.I.sliders + 'Filtres' + (more ? ' <span class="n">' + more + '</span>' : '');
+
+    const d = describe(S);
+    $('alertBtn').innerHTML = U.I.bell + '<span class="lbl-long">Recevoir les nouveaux biens</span><span class="lbl-short">Alerte</span>';
+    $('alertBtn').href = V.wa('Bonjour Villa Nova, envoyez-moi sur WhatsApp les nouveaux biens qui correspondent à ma recherche : ' + (d.length ? d.join(', ') : 'tous vos biens') + '.');
+
+    const nf = V.favs.all().filter(r => all.some(p => p.ref === r)).length;
+    $('favBtn').innerHTML = U.I.heart + 'Favoris' + (nf ? ' (' + nf + ')' : '');
+    $('favBtn').setAttribute('aria-pressed', S.fav);
+    $('sort').value = S.sort;
+  }
+  function renderTags() {
+    const t = [];
+    if (S.type) t.push(['type', V.TYPE_GROUPS[S.type].label]);
+    if (S.zone) t.push(['zone', S.zone.slice(2)]);
+    if (S.budget !== '' && S.t) t.push(['budget', fmtB(V.BUDGETS[S.t][+S.budget]) + ' TND']);
+    if (S.ch) t.push(['ch', 'S+' + S.ch + ' et plus']);
+    S.feat.forEach(f => t.push(['feat:' + f, V.FEATURES[f]]));
+    if (S.ref) t.push(['ref', 'Réf. ' + S.ref]);
+    $('tags').innerHTML = t.map(([k, l]) => '<span class="tag">' + V.esc(l) + '<button data-rm="' + k + '" aria-label="Retirer ' + V.esc(l) + '">×</button></span>').join('') +
+      (t.length > 1 ? '<button class="clear-all" data-rm="all">Tout effacer</button>' : '');
+  }
+
+  /* ── results ────────────────────────────────────────── */
+  function render() {
+    syncURL(); renderControls(); renderTags();
+    let list;
+    $('shortlist').innerHTML = ''; $('empty').innerHTML = '';
+    if (S.fav) {
+      const refs = V.favs.all();
+      list = all.filter(p => refs.includes(p.ref));
+      if (list.length) {
+        const msg = 'Bonjour Villa Nova, voici les biens qui m\'intéressent :\n' + list.map(p => '• ' + p.title + ' (Réf. ' + p.ref + ')\n  ' + V.propertyUrl(p)).join('\n');
+        $('shortlist').innerHTML = '<div class="shortlist"><div><b>Votre sélection, ' + list.length + ' bien' + (list.length > 1 ? 's' : '') + '</b><p>Envoyez-la en un seul message, nous organisons les visites.</p></div>' +
+          '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + V.wa(msg) + '">' + U.I.wa + 'Envoyer ma sélection</a></div>';
+      }
+    } else {
+      list = all.filter(p => match(p, S));
+    }
+    sortList(list);
+    const nb = list.length ? '<b>' + list.length + '</b> ' : '<b>Aucun</b> ';
+    $('count').innerHTML = S.fav ? nb + 'favori' + (list.length > 1 ? 's' : '') : nb + 'bien' + (list.length > 1 ? 's' : '') + (describe(S).length ? ' · ' + V.esc(describe(S).join(' · ')) : '');
+
+    if (!list.length) {
+      if (S.fav) {
+        $('empty').innerHTML = '<div class="empty"><div><h3>Aucun favori pour l\'instant</h3><p>Touchez le cœur d\'un bien pour le garder ici, puis envoyez toute votre sélection en un message.</p></div><div><button class="btn btn-ink" data-rm="fav">Voir tous les biens</button></div></div>';
+      } else if (!all.length) {
+        // nothing published yet: an invitation, never a broken search message
+        const msg = 'Bonjour Villa Nova, je cherche : ';
+        $('empty').innerHTML = '<div class="empty"><div><h3>Nos biens arrivent.</h3><p>Le catalogue est en cours de mise en ligne. Dites-nous ce que vous cherchez : nous vous écrivons dès qu\'un bien correspond.</p></div>' +
+          '<div><a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="' + V.wa(msg) + '">' + U.I.wa + 'Dites-nous ce que vous cherchez</a></div></div>';
+      } else {
+        const d = describe(S);
+        const msg = 'Bonjour Villa Nova, je cherche : ' + d.join(', ') + '.\nPouvez-vous me prévenir quand un bien correspond ?';
+        const relax = [{ budget: 1, ch: 1, feat: 1, ref: 1 }, { budget: 1, ch: 1, feat: 1, ref: 1, zone: 1 }, { budget: 1, ch: 1, feat: 1, ref: 1, zone: 1, type: 1 }];
+        let near = [];
+        for (const r of relax) { near = all.filter(p => match(p, S, r)); if (near.length) break; }
+        if (!near.length) near = all.slice();
+        list = sortList(near).slice(0, 3);
+        $('empty').innerHTML = '<div class="empty"><div><h3>Rien d\'exact pour l\'instant.</h3><p>Nos biens changent chaque semaine. Envoyez-nous votre recherche : nous vous écrivons dès qu\'un bien correspond.</p></div>' +
+          '<div><div class="wa-msg">' + V.esc(msg) + '</div><a class="btn btn-wa btn-block" target="_blank" rel="noopener" href="' + V.wa(msg) + '">' + U.I.wa + 'Me prévenir sur WhatsApp</a></div></div>' +
+          '<div class="near-title">Les biens les plus proches</div>';
+      }
+    }
+    $('grid').innerHTML = list.map(p => U.card(p)).join('');
+    U.bindSlides($('grid')); U.bindHearts($('grid'));
+  }
+
+  /* ── events ─────────────────────────────────────────── */
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { if (S.t !== b.dataset.t) S.budget = ''; S.t = b.dataset.t; S.fav = false; render(); });
+  $('fbar').addEventListener('click', (e) => {
+    const c = e.target.closest('[data-ch],[data-feat]'); if (!c) return;
+    S.fav = false;
+    if (c.dataset.ch) S.ch = S.ch === c.dataset.ch ? '' : c.dataset.ch;
+    if (c.dataset.feat) { const f = c.dataset.feat; S.feat = S.feat.includes(f) ? S.feat.filter(x => x !== f) : S.feat.concat(f); }
+    render();
+  });
+  $('type').onchange = (e) => { S.type = e.target.value; S.fav = false; render(); };
+  $('zone').onchange = (e) => { S.zone = e.target.value; S.fav = false; render(); };
+  $('budget').onchange = (e) => { S.budget = e.target.value; S.fav = false; render(); };
+  $('sort').onchange = (e) => { S.sort = e.target.value; render(); };
+  let rt; $('refBox').oninput = (e) => { clearTimeout(rt); rt = setTimeout(() => { S.ref = e.target.value.trim(); S.fav = false; render(); }, 250); };
+  $('moreBtn').onclick = () => { const o = $('panel').classList.toggle('open'); $('moreBtn').setAttribute('aria-expanded', o); };
+  $('favBtn').onclick = () => { S.fav = !S.fav; render(); };
+  document.addEventListener('vn:favs', () => { if (S.fav) render(); else renderControls(); });
+  document.body.addEventListener('click', (e) => {
+    const rm = e.target.closest('[data-rm]'); if (!rm) return;
+    const k = rm.dataset.rm;
+    if (k === 'all') Object.assign(S, { type: '', zone: '', budget: '', ch: '', feat: [], ref: '' });
+    else if (k === 'fav') S.fav = false;
+    else if (k.startsWith('feat:')) S.feat = S.feat.filter(f => f !== k.slice(5));
+    else S[k] = '';
+    render();
+  });
+  U.bindPhotoOpen($('grid'));
+
+  if (sold.length) {
+    $('past').hidden = false;
+    $('pastGrid').innerHTML = sold.sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)).slice(0, 3).map(p => U.card(p)).join('');
+    U.bindSlides($('pastGrid')); U.bindHearts($('pastGrid'));
+  }
+  render();
+})();
+</script>
+</body>
+</html>
